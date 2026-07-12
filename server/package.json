@@ -1,0 +1,22 @@
+{
+  "name": "travelz-server",
+  "version": "1.0.0",
+  "description": "API for Travelz — a curated social travel map (v1: Your Living Map)",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "seed": "node src/scripts/seed.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "exifr": "^7.1.3",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.5.1",
+    "multer": "^2.2.0",
+    "sharp": "^0.33.4"
+  }
+}

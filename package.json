@@ -1,0 +1,14 @@
+{
+  "name": "travelz",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Travelz — a curated social travel map — v1: Your Living Map (MERN)",
+  "scripts": {
+    "dev": "concurrently -n api,web -c cyan,magenta \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
+    "seed": "npm --prefix server run seed",
+    "install:all": "npm --prefix server install && npm --prefix client install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}
