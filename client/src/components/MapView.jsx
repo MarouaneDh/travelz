@@ -4,7 +4,7 @@ import maplibregl from 'maplibre-gl';
 import { api, mediaUrl } from '../api.js';
 import { MAP_STYLE } from '../mapStyle.js';
 
-export default function MapView({ username = null, feed = false }) {
+export default function MapView({ username = null, feed = false, explore = false }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const markersRef = useRef({}); // id -> maplibre.Marker
@@ -25,7 +25,9 @@ export default function MapView({ username = null, feed = false }) {
     map.on('load', async () => {
       let geojson;
       try {
-        geojson = feed
+        geojson = explore
+          ? await api.getExploreGeojson()
+          : feed
           ? await api.getFeedGeojson()
           : username
           ? await api.getUserGeojson(username)
@@ -85,7 +87,7 @@ export default function MapView({ username = null, feed = false }) {
     });
 
     return () => map.remove();
-  }, [navigate, username, feed]);
+  }, [navigate, username, feed, explore]);
 
   return (
     <div className="map-wrap">

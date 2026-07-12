@@ -99,7 +99,7 @@ async function run() {
       const shots = 3;
       for (let i = 0; i < shots; i++) {
         const buf = fs.readFileSync(path.join(PHOTO_DIR, nextFile()));
-        const img = await processImage(buf);
+        const img = await processImage(buf, user._id);
         const photo = await Photo.create({
           ...img,
           owner: user._id,

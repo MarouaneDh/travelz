@@ -73,7 +73,7 @@ async function run() {
     let cover = null;
     for (let i = 0; i < buckets[d].length; i++) {
       const buf = fs.readFileSync(path.join(PHOTO_DIR, buckets[d][i]));
-      const img = await processImage(buf);
+      const img = await processImage(buf, curator._id);
       const takenAt = new Date(baseDate.getTime() + i * 3600 * 1000);
       const photo = await Photo.create({
         ...img,

@@ -1,43 +1,39 @@
 import sharp from 'sharp';
-import { randomUUID } from 'crypto';
-import path from 'path';
-import fs from 'fs/promises';
+import { Image } from '../models/Image.js';
 
-const UPLOAD_DIR = path.resolve('uploads');
-
+// Kept for backward-compat with callers; images now live in MongoDB, not on disk.
 export async function ensureUploadDir() {
-  await fs.mkdir(UPLOAD_DIR, { recursive: true });
+  /* no-op — images are stored in the database */
 }
 
 /**
  * Process an uploaded image buffer:
  * - strips ALL metadata (privacy: EXIF GPS could leak home addresses)
- * - writes a web-friendly full image + a small thumbnail
- * Returns served paths + dimensions.
+ * - produces a web-friendly full image + a thumbnail (both webp, in memory)
+ * - stores both in MongoDB so every environment serves the same bytes
+ * Returns served API paths + dimensions.
  */
-export async function processImage(buffer) {
-  const id = randomUUID();
-  const fullName = `${id}.webp`;
-  const thumbName = `${id}_thumb.webp`;
-
+export async function processImage(buffer, owner) {
   const base = sharp(buffer).rotate(); // respect orientation, then drop metadata
   const meta = await base.metadata();
 
-  await base
-    .clone()
-    .resize({ width: 2000, height: 2000, fit: 'inside', withoutEnlargement: true })
-    .webp({ quality: 82 })
-    .toFile(path.join(UPLOAD_DIR, fullName));
+  const [fullBuf, thumbBuf] = await Promise.all([
+    base
+      .clone()
+      .resize({ width: 2000, height: 2000, fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 82 })
+      .toBuffer(),
+    base.clone().resize({ width: 400, height: 400, fit: 'cover' }).webp({ quality: 78 }).toBuffer(),
+  ]);
 
-  await base
-    .clone()
-    .resize({ width: 400, height: 400, fit: 'cover' })
-    .webp({ quality: 78 })
-    .toFile(path.join(UPLOAD_DIR, thumbName));
+  const [full, thumb] = await Promise.all([
+    Image.create({ data: fullBuf, contentType: 'image/webp', owner }),
+    Image.create({ data: thumbBuf, contentType: 'image/webp', owner }),
+  ]);
 
   return {
-    url: `/uploads/${fullName}`,
-    thumbUrl: `/uploads/${thumbName}`,
+    url: `/api/images/${full._id}`,
+    thumbUrl: `/api/images/${thumb._id}`,
     width: meta.width || null,
     height: meta.height || null,
   };

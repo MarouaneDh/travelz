@@ -49,6 +49,12 @@ export const api = {
   getFeedGeojson: () =>
     fetch(`${BASE}/api/feed/geojson`, { headers: authHeaders() }).then(handle),
 
+  // Explore-by-place (public)
+  getExploreGeojson: () => fetch(`${BASE}/api/explore/geojson`).then(handle),
+  getExplorePlaces: () => fetch(`${BASE}/api/explore/places`).then(handle),
+  getExplorePlace: (name) =>
+    fetch(`${BASE}/api/explore/place?name=${encodeURIComponent(name)}`).then(handle),
+
   me: () => fetch(`${BASE}/api/auth/me`, { headers: authHeaders() }).then(handle),
 
   register: (payload) =>

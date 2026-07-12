@@ -3,12 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import Nav from '../components/Nav.jsx';
 import Reactions from '../components/Reactions.jsx';
 import { PinIcon, CalendarIcon, ArrowLeftIcon } from '../components/Icons.jsx';
+import Flag from '../components/Flag.jsx';
 import { api, mediaUrl } from '../api.js';
-
-const flag = (code) =>
-  code
-    ? code.toUpperCase().replace(/./g, (c) => String.fromCodePoint(127397 + c.charCodeAt(0)))
-    : '';
 
 const fmtRange = (a, b) => {
   if (!a) return '';
@@ -66,8 +62,7 @@ export default function MomentDetail() {
           <h1 className="detail-title">{moment.title || moment.placeName}</h1>
           <div className="detail-meta">
             <span>
-              <PinIcon width={16} height={16} /> {moment.placeName}{' '}
-              <span className="flag">{flag(moment.countryCode)}</span>
+              <PinIcon width={16} height={16} /> {moment.placeName} <Flag code={moment.countryCode} />
             </span>
             <span>
               <CalendarIcon width={16} height={16} /> {fmtRange(moment.startAt, moment.endAt)}

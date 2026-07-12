@@ -30,7 +30,7 @@ router.post('/', requireAuth, upload.array('photos', 50), async (req, res) => {
   for (const file of req.files) {
     try {
       const { lat, lng, takenAt } = await extractExif(file.buffer);
-      const img = await processImage(file.buffer); // strips EXIF for privacy
+      const img = await processImage(file.buffer, owner); // strips EXIF for privacy
 
       const hasGps = typeof lat === 'number' && typeof lng === 'number';
       const when = takenAt ? new Date(takenAt) : new Date();

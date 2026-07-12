@@ -171,6 +171,20 @@ img {
   line-height: 1;
 }
 
+/* SVG country flag image (renders on every OS, unlike flag emoji on Windows) */
+.flag-img {
+  display: inline-block;
+  height: 0.85em;
+  width: auto;
+  vertical-align: -0.02em;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+  object-fit: cover;
+}
+.passport-flags .flag-img {
+  height: 1.05em;
+}
+
 .spin {
   width: 20px;
   height: 20px;

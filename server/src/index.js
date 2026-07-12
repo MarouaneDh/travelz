@@ -14,6 +14,8 @@ import reactionRoutes from './routes/reactions.js';
 import photoRoutes from './routes/photos.js';
 import userRoutes from './routes/users.js';
 import feedRoutes from './routes/feed.js';
+import exploreRoutes from './routes/explore.js';
+import imageRoutes from './routes/images.js';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -63,6 +65,8 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/photos', photoRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/feed', feedRoutes);
+app.use('/api/explore', exploreRoutes);
+app.use('/api/images', imageRoutes);
 app.use('/api/moments', reactionRoutes); // /:id/react
 app.use('/api/moments', momentRoutes);
 

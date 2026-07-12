@@ -1,13 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api.js';
-
-// ISO alpha-2 → flag emoji (content, not a UI icon — allowed).
-const flag = (code) =>
-  code
-    ? code
-        .toUpperCase()
-        .replace(/./g, (c) => String.fromCodePoint(127397 + c.charCodeAt(0)))
-    : '';
+import Flag from './Flag.jsx';
 
 export default function Passport({ username = null }) {
   const [data, setData] = useState(null);
@@ -30,11 +23,9 @@ export default function Passport({ username = null }) {
         <span className="passport-num">{data.percentOfWorld}%</span>
         <span className="passport-label">of the world</span>
       </div>
-      <div className="passport-flags" aria-hidden="true">
+      <div className="passport-flags">
         {data.countries.slice(0, 12).map((c) => (
-          <span key={c.code} className="flag" title={c.country}>
-            {flag(c.code)}
-          </span>
+          <Flag key={c.code} code={c.code} title={c.country} />
         ))}
       </div>
     </div>

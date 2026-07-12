@@ -1,11 +1,7 @@
 import { Link } from 'react-router-dom';
 import { mediaUrl } from '../api.js';
 import { PinIcon, CameraIcon } from './Icons.jsx';
-
-const flag = (code) =>
-  code
-    ? code.toUpperCase().replace(/./g, (c) => String.fromCodePoint(127397 + c.charCodeAt(0)))
-    : '';
+import Flag from './Flag.jsx';
 
 const fmtDate = (d) =>
   d ? new Date(d).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : '';
@@ -39,8 +35,7 @@ export default function MomentCard({ moment }) {
         <div className="moment-card-meta">
           <span className="moment-card-place">
             <PinIcon width={14} height={14} />
-            {moment.city || moment.placeName}{' '}
-            <span className="flag">{flag(moment.countryCode)}</span>
+            {moment.city || moment.placeName} <Flag code={moment.countryCode} />
           </span>
           <span className="muted">{fmtDate(moment.startAt)}</span>
         </div>

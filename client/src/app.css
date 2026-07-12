@@ -58,6 +58,26 @@
   display: flex;
   gap: 0.5rem;
 }
+.nav-end {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.nav-link {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  padding: 0.5rem 0.25rem;
+  border-bottom: 2px solid transparent;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.nav-link:hover {
+  color: var(--text);
+}
+.nav-link.active {
+  color: var(--sky);
+  border-bottom-color: var(--sky);
+}
 
 /* Hero ------------------------------------------------------- */
 .hero {
@@ -931,6 +951,40 @@
 
 .feed-title {
   font-size: clamp(1.9rem, 5vw, 3.2rem);
+}
+
+/* Explore + Place ------------------------------------------- */
+.explore-sub {
+  margin-top: 1rem;
+  max-width: 52ch;
+  font-size: 1.05rem;
+}
+.place-travelers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+.place-traveler {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.75rem 0.3rem 0.35rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.place-traveler:hover {
+  border-color: color-mix(in srgb, var(--sky) 45%, var(--border));
+  background: var(--surface);
+}
+.place-traveler .account-avatar {
+  width: 26px;
+  height: 26px;
+  font-size: 0.78rem;
 }
 
 .detail-author {
