@@ -18,13 +18,20 @@ import feedRoutes from './routes/feed.js';
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Allowed browser origins. Set CLIENT_ORIGIN to a comma-separated list of your
-// deployed frontend URL(s) (no trailing slash). If it's unset, all origins are
-// allowed — handy for first deploys, but set it in production.
-const allowedOrigins = (process.env.CLIENT_ORIGIN || '')
-  .split(',')
-  .map((s) => s.trim().replace(/\/$/, '')) // tolerate trailing slashes
-  .filter(Boolean);
+// Allowed browser origins. Known frontends are baked in as defaults; extra
+// origins can be added via a comma-separated CLIENT_ORIGIN env var. Trailing
+// slashes are tolerated (browsers send the Origin header without one).
+const DEFAULT_ORIGINS = [
+  'http://localhost:5173', // local dev
+  'https://we-travelz.netlify.app', // deployed frontend (Netlify)
+];
+const allowedOrigins = [
+  ...new Set(
+    [...DEFAULT_ORIGINS, ...(process.env.CLIENT_ORIGIN || '').split(',')]
+      .map((s) => s.trim().replace(/\/$/, ''))
+      .filter(Boolean)
+  ),
+];
 
 app.use(
   cors({
