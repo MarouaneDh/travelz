@@ -15,6 +15,7 @@ import { Photo } from '../models/Photo.js';
 import { Moment } from '../models/Moment.js';
 import { ensureUploadDir, processImage } from '../services/images.js';
 import { reverseGeocode } from '../services/geocode.js';
+import { ensureCurator } from '../services/bootstrap.js';
 
 const PHOTO_DIR = path.resolve('..', 'Photos partagées avec Mimi');
 
@@ -33,10 +34,11 @@ const jitter = (v) => v + (Math.floor((Math.abs(v) * 1e6) % 100) / 100 - 0.5) * 
 async function run() {
   await ensureUploadDir();
   await connectDB(process.env.MONGODB_URI);
+  const curator = await ensureCurator();
 
-  await Photo.deleteMany({});
-  await Moment.deleteMany({});
-  console.log('🧹 Cleared existing photos & moments');
+  await Photo.deleteMany({ owner: curator._id });
+  await Moment.deleteMany({ owner: curator._id });
+  console.log("🧹 Cleared curator's existing photos & moments");
 
   const files = fs
     .readdirSync(PHOTO_DIR)
@@ -58,6 +60,7 @@ async function run() {
     const baseDate = new Date(dest.date);
 
     const moment = await Moment.create({
+      owner: curator._id,
       placeName: geo?.placeName || dest.name,
       city: geo?.city || dest.name,
       country: geo?.country || '',
@@ -74,6 +77,7 @@ async function run() {
       const takenAt = new Date(baseDate.getTime() + i * 3600 * 1000);
       const photo = await Photo.create({
         ...img,
+        owner: curator._id,
         takenAt,
         location: {
           type: 'Point',

@@ -12,12 +12,14 @@ import { findMatchingMoment } from './grouping.js';
  */
 export async function attachPhotoToMoment(photo, { lat, lng, takenAt }) {
   const when = takenAt ? new Date(takenAt) : photo.takenAt || new Date();
+  const owner = photo.owner;
 
-  let moment = await findMatchingMoment({ lat, lng, takenAt: when });
+  let moment = await findMatchingMoment({ owner, lat, lng, takenAt: when });
 
   if (!moment) {
     const geo = await reverseGeocode(lat, lng);
     moment = await Moment.create({
+      owner,
       placeName: geo?.placeName || 'Unknown place',
       city: geo?.city || '',
       country: geo?.country || '',

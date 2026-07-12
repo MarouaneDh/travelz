@@ -18,10 +18,29 @@ async function handle(res) {
 export const api = {
   base: BASE,
 
+  // Curator brand home
   getMoments: () => fetch(`${BASE}/api/moments`).then(handle),
   getGeojson: () => fetch(`${BASE}/api/moments/geojson`).then(handle),
   getMoment: (id) => fetch(`${BASE}/api/moments/${id}`).then(handle),
   getPassport: () => fetch(`${BASE}/api/moments/passport`).then(handle),
+
+  // Traveler profiles (per-user maps)
+  getUser: (username) => fetch(`${BASE}/api/users/${username}`).then(handle),
+  getUserMoments: (username) =>
+    fetch(`${BASE}/api/users/${username}/moments`).then(handle),
+  getUserGeojson: (username) =>
+    fetch(`${BASE}/api/users/${username}/geojson`).then(handle),
+  getUserPassport: (username) =>
+    fetch(`${BASE}/api/users/${username}/passport`).then(handle),
+
+  me: () => fetch(`${BASE}/api/auth/me`, { headers: authHeaders() }).then(handle),
+
+  register: (payload) =>
+    fetch(`${BASE}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }).then(handle),
 
   react: (id, emoji) =>
     fetch(`${BASE}/api/moments/${id}/react`, {
@@ -40,11 +59,11 @@ export const api = {
       body: JSON.stringify({ lat, lng }),
     }).then(handle),
 
-  login: (username, password) =>
+  login: (identifier, password) =>
     fetch(`${BASE}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ identifier, password }),
     }).then(handle),
 
   upload: (files, onProgress) => {

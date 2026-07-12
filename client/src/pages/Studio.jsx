@@ -1,86 +1,28 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import Nav from '../components/Nav.jsx';
 import { UploadIcon, CameraIcon, PinIcon } from '../components/Icons.jsx';
 import PlacePhotoModal from '../components/PlacePhotoModal.jsx';
+import { useAuth } from '../auth.jsx';
 import { api, mediaUrl } from '../api.js';
 
-export default function Admin() {
-  const [token, setToken] = useState(() => localStorage.getItem('tt_token'));
-
-  if (!token) return <Login onDone={setToken} />;
-  return <Uploader onLogout={() => { localStorage.removeItem('tt_token'); setToken(null); }} />;
+export default function Studio() {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" replace />;
+  return <Uploader user={user} />;
 }
 
-function Login({ onDone }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
-  const [busy, setBusy] = useState(false);
-
-  const submit = async (e) => {
-    e.preventDefault();
-    setBusy(true);
-    setError(null);
-    try {
-      const { token } = await api.login(username, password);
-      localStorage.setItem('tt_token', token);
-      onDone(token);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <>
-      <Nav />
-      <div className="auth-wrap">
-        <form className="auth-card" onSubmit={submit}>
-          <h1 className="auth-title">Curator sign in</h1>
-          <p className="muted">Only the curator can add moments.</p>
-
-          <label htmlFor="u">Username</label>
-          <input
-            id="u"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoComplete="username"
-            required
-          />
-
-          <label htmlFor="p">Password</label>
-          <input
-            id="p"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-            required
-          />
-
-          {error && <p className="error-banner">{error}</p>}
-
-          <button className="btn btn-primary" disabled={busy} style={{ width: '100%', justifyContent: 'center' }}>
-            {busy ? <span className="spin" /> : 'Sign in'}
-          </button>
-        </form>
-      </div>
-    </>
-  );
-}
-
-function Uploader({ onLogout }) {
+function Uploader({ user }) {
   const [dragging, setDragging] = useState(false);
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState(null); // { uploading, result, error }
   const [unplaced, setUnplaced] = useState([]);
-  const [placing, setPlacing] = useState(null); // photo being placed
-  const [justPlaced, setJustPlaced] = useState(null); // toast after placing
+  const [placing, setPlacing] = useState(null);
+  const [justPlaced, setJustPlaced] = useState(null);
 
-  const loadUnplaced = () =>
-    api.getUnplaced().then(setUnplaced).catch(() => {});
+  const myMap = user.role === 'curator' ? '/' : `/u/${user.username}`;
+
+  const loadUnplaced = () => api.getUnplaced().then(setUnplaced).catch(() => {});
 
   useEffect(() => {
     loadUnplaced();
@@ -93,7 +35,7 @@ function Uploader({ onLogout }) {
     try {
       const result = await api.upload(files, setProgress);
       setStatus({ result });
-      loadUnplaced(); // new uploads may include GPS-less photos
+      loadUnplaced();
     } catch (err) {
       setStatus({ error: err.message });
     }
@@ -108,18 +50,12 @@ function Uploader({ onLogout }) {
 
   return (
     <>
-      <Nav
-        right={
-          <button className="btn btn-ghost btn-sm" onClick={onLogout}>
-            Sign out
-          </button>
-        }
-      />
+      <Nav />
       <div className="container uploader">
         <h1 className="uploader-title">Add moments</h1>
         <p className="muted">
-          Drop a batch of travel photos. They'll auto-group by place &amp; time — geotagged
-          photos land on the map instantly.
+          Drop a batch of travel photos onto <strong>your</strong> map. They'll auto-group
+          by place &amp; time — geotagged photos land on the map instantly.
         </p>
 
         <label
@@ -150,7 +86,10 @@ function Uploader({ onLogout }) {
         {status?.uploading && (
           <div className="upload-progress">
             <div className="upload-bar">
-              <div className="upload-bar-fill" style={{ width: `${Math.round(progress * 100)}%` }} />
+              <div
+                className="upload-bar-fill"
+                style={{ width: `${Math.round(progress * 100)}%` }}
+              />
             </div>
             <span className="muted">
               {progress < 1 ? `Uploading ${Math.round(progress * 100)}%` : 'Processing photos…'}
@@ -169,8 +108,8 @@ function Uploader({ onLogout }) {
                   ` · ${status.result.needsPlacement} need a location (no GPS)`}
                 .
               </p>
-              <Link to="/" className="btn btn-primary btn-sm" style={{ marginTop: '0.5rem' }}>
-                View the map
+              <Link to={myMap} className="btn btn-primary btn-sm" style={{ marginTop: '0.5rem' }}>
+                View my map
               </Link>
             </div>
           </div>
@@ -180,8 +119,7 @@ function Uploader({ onLogout }) {
 
         {justPlaced && (
           <div className="place-toast">
-            <PinIcon width={18} height={18} /> Placed in{' '}
-            <strong>{justPlaced.placeName}</strong>.
+            <PinIcon width={18} height={18} /> Placed in <strong>{justPlaced.placeName}</strong>.
           </div>
         )}
 

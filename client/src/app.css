@@ -791,6 +791,109 @@
   transform: rotate(-45deg);
 }
 
+/* Account menu ----------------------------------------------- */
+.account-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.75rem 0.3rem 0.35rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.account-chip:hover {
+  border-color: color-mix(in srgb, var(--sky) 45%, var(--border));
+  background: var(--surface);
+}
+.account-avatar {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sky), var(--orange));
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.auth-alt {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+.auth-alt a {
+  color: var(--sky);
+  font-weight: 600;
+}
+
+/* Profile header --------------------------------------------- */
+.profile-hero {
+  text-align: left;
+  padding-top: 2.5rem;
+}
+.profile-id {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.profile-avatar {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sky), var(--orange));
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+.profile-name {
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+}
+.profile-handle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+.profile-badge {
+  padding: 0.15rem 0.55rem;
+  background: color-mix(in srgb, var(--orange) 16%, transparent);
+  color: var(--orange-deep);
+  border: 1px solid color-mix(in srgb, var(--orange) 35%, transparent);
+  border-radius: var(--r-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.profile-bio {
+  margin-top: 1rem;
+  max-width: 60ch;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+.profile-hero .passport {
+  margin-top: 1.5rem;
+}
+
+.detail-author {
+  display: inline-flex;
+  align-items: center;
+  color: var(--sky);
+  font-weight: 600;
+}
+.detail-author:hover {
+  text-decoration: underline;
+}
+
 /* Larger screens: give the map more room */
 @media (min-width: 900px) {
   .map-wrap {

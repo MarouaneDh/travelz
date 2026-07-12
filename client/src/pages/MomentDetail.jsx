@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import Nav from '../components/Nav.jsx';
 import Reactions from '../components/Reactions.jsx';
 import { PinIcon, CalendarIcon, ArrowLeftIcon } from '../components/Icons.jsx';
@@ -72,6 +72,11 @@ export default function MomentDetail() {
             <span>
               <CalendarIcon width={16} height={16} /> {fmtRange(moment.startAt, moment.endAt)}
             </span>
+            {moment.owner?.username && (
+              <Link to={`/u/${moment.owner.username}`} className="detail-author">
+                by {moment.owner.displayName || `@${moment.owner.username}`}
+              </Link>
+            )}
           </div>
           {moment.body && <p className="detail-body">{moment.body}</p>}
         </header>

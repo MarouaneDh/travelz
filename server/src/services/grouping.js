@@ -20,14 +20,16 @@ function haversineKm(a, b) {
  * Find an existing moment a photo belongs to, or null if it should start a new one.
  * Matches on spatial + temporal proximity.
  */
-export async function findMatchingMoment({ lat, lng, takenAt }) {
+export async function findMatchingMoment({ owner, lat, lng, takenAt }) {
   if (typeof lat !== 'number' || typeof lng !== 'number') return null;
 
   const when = takenAt ? new Date(takenAt) : null;
   const timeWindow = TIME_HOURS * 60 * 60 * 1000;
 
-  // Candidate moments within the distance radius (geospatial pre-filter).
+  // Candidate moments within the distance radius (geospatial pre-filter),
+  // scoped to this owner so users never merge into each other's moments.
   const candidates = await Moment.find({
+    owner,
     location: {
       $near: {
         $geometry: { type: 'Point', coordinates: [lng, lat] },

@@ -1,16 +1,16 @@
 import { Router } from 'express';
 import { Photo } from '../models/Photo.js';
-import { requireCurator } from '../middleware/auth.js';
+import { requireAuth } from '../middleware/auth.js';
 import { attachPhotoToMoment } from '../services/attach.js';
 
 const router = Router();
 
 /**
- * GET /api/photos/unplaced  (curator only)
- * Photos that had no GPS EXIF and are waiting to be placed on the map.
+ * GET /api/photos/unplaced
+ * The current user's photos that had no GPS EXIF and await placement.
  */
-router.get('/unplaced', requireCurator, async (req, res) => {
-  const photos = await Photo.find({ needsPlacement: true })
+router.get('/unplaced', requireAuth, async (req, res) => {
+  const photos = await Photo.find({ owner: req.user.sub, needsPlacement: true })
     .sort({ takenAt: 1, createdAt: 1 })
     .select('url thumbUrl takenAt')
     .lean();
@@ -22,7 +22,7 @@ router.get('/unplaced', requireCurator, async (req, res) => {
  * Manually place a GPS-less photo — runs the same geocode + grouping pipeline
  * as an EXIF-tagged upload, then attaches it to the matching/new moment.
  */
-router.post('/:id/place', requireCurator, async (req, res) => {
+router.post('/:id/place', requireAuth, async (req, res) => {
   const { lat, lng } = req.body || {};
   if (
     typeof lat !== 'number' ||
@@ -35,7 +35,7 @@ router.post('/:id/place', requireCurator, async (req, res) => {
     return res.status(400).json({ error: 'Valid lat/lng required' });
   }
 
-  const photo = await Photo.findById(req.params.id);
+  const photo = await Photo.findOne({ _id: req.params.id, owner: req.user.sub });
   if (!photo) return res.status(404).json({ error: 'Photo not found' });
   if (!photo.needsPlacement) {
     return res.status(409).json({ error: 'Photo is already placed' });

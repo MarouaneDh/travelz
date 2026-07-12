@@ -6,6 +6,12 @@ import mongoose from 'mongoose';
  */
 const photoSchema = new mongoose.Schema(
   {
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true,
+    },
     url: { type: String, required: true }, // full-size served path
     thumbUrl: { type: String, required: true }, // small thumbnail served path
     width: Number,

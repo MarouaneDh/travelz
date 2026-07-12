@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
 import { Photo } from '../models/Photo.js';
-import { requireCurator } from '../middleware/auth.js';
+import { requireAuth } from '../middleware/auth.js';
 import { extractExif } from '../services/exif.js';
 import { processImage } from '../services/images.js';
 import { attachPhotoToMoment } from '../services/attach.js';
@@ -18,10 +18,11 @@ const upload = multer({
  * (EXIF → strip metadata → thumbnail → reverse geocode → group into a moment).
  * Returns the affected moments so the client can refresh the map.
  */
-router.post('/', requireCurator, upload.array('photos', 50), async (req, res) => {
+router.post('/', requireAuth, upload.array('photos', 50), async (req, res) => {
   if (!req.files?.length) {
     return res.status(400).json({ error: 'No photos uploaded' });
   }
+  const owner = req.user.sub;
 
   const touchedMomentIds = new Set();
   const created = [];
@@ -36,6 +37,7 @@ router.post('/', requireCurator, upload.array('photos', 50), async (req, res) =>
 
       const photo = await Photo.create({
         ...img,
+        owner,
         takenAt: when,
         location: hasGps ? { type: 'Point', coordinates: [lng, lat] } : undefined,
         needsPlacement: !hasGps,

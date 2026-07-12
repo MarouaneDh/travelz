@@ -9,12 +9,13 @@ const flag = (code) =>
         .replace(/./g, (c) => String.fromCodePoint(127397 + c.charCodeAt(0)))
     : '';
 
-export default function Passport() {
+export default function Passport({ username = null }) {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    api.getPassport().then(setData).catch(() => {});
-  }, []);
+    const load = username ? api.getUserPassport(username) : api.getPassport();
+    load.then(setData).catch(() => {});
+  }, [username]);
 
   if (!data || data.countryCount === 0) return null;
 
