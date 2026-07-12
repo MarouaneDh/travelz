@@ -18,12 +18,34 @@ import feedRoutes from './routes/feed.js';
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+// Allowed browser origins. Set CLIENT_ORIGIN to a comma-separated list of your
+// deployed frontend URL(s) (no trailing slash). If it's unset, all origins are
+// allowed — handy for first deploys, but set it in production.
+const allowedOrigins = (process.env.CLIENT_ORIGIN || '')
+  .split(',')
+  .map((s) => s.trim().replace(/\/$/, '')) // tolerate trailing slashes
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN?.split(',') || '*',
+    origin(origin, cb) {
+      // Non-browser requests (curl, health checks) have no Origin header.
+      if (!origin) return cb(null, true);
+      // No allowlist configured → allow everything (reflects the origin).
+      if (allowedOrigins.length === 0) return cb(null, true);
+      const normalized = origin.replace(/\/$/, '');
+      if (allowedOrigins.includes(normalized)) return cb(null, true);
+      return cb(new Error(`Origin ${origin} not allowed by CORS`));
+    },
   })
 );
 app.use(express.json());
+
+console.log(
+  allowedOrigins.length
+    ? `🔒 CORS restricted to: ${allowedOrigins.join(', ')}`
+    : '🌐 CORS: all origins allowed (set CLIENT_ORIGIN to lock this down)'
+);
 
 // Serve processed images.
 app.use('/uploads', express.static(path.resolve('uploads')));
