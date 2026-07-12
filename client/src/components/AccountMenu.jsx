@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth.jsx';
-import { CameraIcon } from './Icons.jsx';
+import { CameraIcon, ListIcon } from './Icons.jsx';
 
 export default function AccountMenu() {
   const { user, signOut, isCurator } = useAuth();
@@ -24,6 +24,10 @@ export default function AccountMenu() {
 
   return (
     <div className="nav-right">
+      <Link to="/feed" className="btn btn-ghost btn-sm" aria-label="Following feed">
+        <ListIcon width={18} height={18} />
+        <span className="hide-mobile">Following</span>
+      </Link>
       <Link to="/studio" className="btn btn-ghost btn-sm" aria-label="Add moments">
         <CameraIcon width={18} height={18} />
         <span className="hide-mobile">Add moments</span>

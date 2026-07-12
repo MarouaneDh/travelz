@@ -5,6 +5,7 @@ import Profile from './pages/Profile.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Studio from './pages/Studio.jsx';
+import FeedPage from './pages/FeedPage.jsx';
 import './app.css';
 
 export default function App() {
@@ -13,6 +14,7 @@ export default function App() {
       <Route path="/" element={<Home />} />
       <Route path="/moment/:id" element={<MomentDetail />} />
       <Route path="/u/:username" element={<Profile />} />
+      <Route path="/feed" element={<FeedPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/studio" element={<Studio />} />

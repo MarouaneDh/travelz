@@ -4,7 +4,7 @@ import maplibregl from 'maplibre-gl';
 import { api, mediaUrl } from '../api.js';
 import { MAP_STYLE } from '../mapStyle.js';
 
-export default function MapView({ username = null }) {
+export default function MapView({ username = null, feed = false }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const markersRef = useRef({}); // id -> maplibre.Marker
@@ -25,7 +25,11 @@ export default function MapView({ username = null }) {
     map.on('load', async () => {
       let geojson;
       try {
-        geojson = username ? await api.getUserGeojson(username) : await api.getGeojson();
+        geojson = feed
+          ? await api.getFeedGeojson()
+          : username
+          ? await api.getUserGeojson(username)
+          : await api.getGeojson();
       } catch {
         return;
       }
@@ -42,22 +46,46 @@ export default function MapView({ username = null }) {
         clusterMaxZoom: 12,
       });
 
+      // Invisible circle layers force the GeoJSON source to be tiled — without a
+      // layer referencing it, querySourceFeatures() returns nothing. We draw the
+      // real pins as HTML markers on top, so these stay transparent.
+      map.addLayer({
+        id: 'clusters',
+        type: 'circle',
+        source: 'moments',
+        filter: ['has', 'point_count'],
+        paint: { 'circle-radius': 1, 'circle-opacity': 0 },
+      });
+      map.addLayer({
+        id: 'unclustered',
+        type: 'circle',
+        source: 'moments',
+        filter: ['!', ['has', 'point_count']],
+        paint: { 'circle-radius': 1, 'circle-opacity': 0 },
+      });
+
+      // Register render triggers BEFORE fitBounds — for inline GeoJSON the
+      // source 'data' and 'moveend' events fire almost immediately, so
+      // registering afterwards would miss them and leave the map marker-less.
+      // 'idle' guarantees we render once tiles are actually built.
+      const render = () => syncMarkers(map, markersRef, navigate);
+      map.on('data', (e) => {
+        if (e.sourceId === 'moments' && map.getSource('moments')?.loaded()) render();
+      });
+      map.on('idle', render);
+      map.on('move', render);
+      map.on('moveend', render);
+
       // Fit the map to the pins.
       const bounds = new maplibregl.LngLatBounds();
       geojson.features.forEach((f) => bounds.extend(f.geometry.coordinates));
       map.fitBounds(bounds, { padding: 80, maxZoom: 6, duration: 0 });
 
-      const render = () => syncMarkers(map, markersRef, navigate);
-      map.on('data', (e) => {
-        if (e.sourceId === 'moments' && map.getSource('moments')?.loaded()) render();
-      });
-      map.on('move', render);
-      map.on('moveend', render);
       render();
     });
 
     return () => map.remove();
-  }, [navigate, username]);
+  }, [navigate, username, feed]);
 
   return (
     <div className="map-wrap">

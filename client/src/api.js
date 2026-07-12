@@ -33,6 +33,22 @@ export const api = {
   getUserPassport: (username) =>
     fetch(`${BASE}/api/users/${username}/passport`).then(handle),
 
+  follow: (username) =>
+    fetch(`${BASE}/api/users/${username}/follow`, {
+      method: 'POST',
+      headers: authHeaders(),
+    }).then(handle),
+
+  unfollow: (username) =>
+    fetch(`${BASE}/api/users/${username}/follow`, {
+      method: 'DELETE',
+      headers: authHeaders(),
+    }).then(handle),
+
+  getFeed: () => fetch(`${BASE}/api/feed`, { headers: authHeaders() }).then(handle),
+  getFeedGeojson: () =>
+    fetch(`${BASE}/api/feed/geojson`, { headers: authHeaders() }).then(handle),
+
   me: () => fetch(`${BASE}/api/auth/me`, { headers: authHeaders() }).then(handle),
 
   register: (payload) =>

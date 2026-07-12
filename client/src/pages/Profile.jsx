@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import Nav from '../components/Nav.jsx';
 import MapExperience from '../components/MapExperience.jsx';
 import Passport from '../components/Passport.jsx';
+import FollowButton from '../components/FollowButton.jsx';
 import { api } from '../api.js';
 
 export default function Profile() {
@@ -35,14 +36,35 @@ export default function Profile() {
           <span className="profile-avatar">
             {(profile?.displayName || username).charAt(0).toUpperCase()}
           </span>
-          <div>
+          <div className="profile-id-main">
             <h1 className="profile-name">{profile?.displayName || username}</h1>
             <p className="profile-handle">
               @{username}
               {profile?.role === 'curator' && <span className="profile-badge">Curator</span>}
             </p>
           </div>
+          {profile && !profile.isSelf && (
+            <FollowButton
+              username={username}
+              initialFollowing={profile.isFollowing}
+              onCountChange={(n) =>
+                setProfile((p) => (p ? { ...p, followerCount: n } : p))
+              }
+            />
+          )}
         </div>
+
+        {profile && (
+          <div className="profile-stats">
+            <span>
+              <strong>{profile.followerCount}</strong> followers
+            </span>
+            <span>
+              <strong>{profile.followingCount}</strong> following
+            </span>
+          </div>
+        )}
+
         {profile?.bio && <p className="profile-bio">{profile.bio}</p>}
         <Passport username={username} />
       </div>

@@ -27,6 +27,14 @@ export default function MomentCard({ moment }) {
         </span>
       </div>
       <div className="moment-card-body">
+        {moment.owner?.username && (
+          <span className="moment-card-author">
+            <span className="moment-card-author-avatar">
+              {(moment.owner.displayName || moment.owner.username).charAt(0).toUpperCase()}
+            </span>
+            {moment.owner.displayName || `@${moment.owner.username}`}
+          </span>
+        )}
         <h3 className="moment-card-title">{moment.title || moment.placeName}</h3>
         <div className="moment-card-meta">
           <span className="moment-card-place">

@@ -281,6 +281,11 @@
 .map-canvas {
   position: absolute;
   inset: 0;
+  /* Explicit size so the map never collapses: MapLibre adds its own
+     .maplibregl-map class (position: relative), which can override the
+     absolute positioning above and leave the container at height 0. */
+  width: 100%;
+  height: 100%;
 }
 .map-empty {
   position: absolute;
@@ -882,6 +887,50 @@
 }
 .profile-hero .passport {
   margin-top: 1.5rem;
+}
+.profile-id-main {
+  flex: 1;
+  min-width: 0;
+}
+.profile-id .btn {
+  flex-shrink: 0;
+}
+.profile-stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+.profile-stats strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* Author chip on feed cards */
+.moment-card-author {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.moment-card-author-avatar {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sky), var(--orange));
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.feed-title {
+  font-size: clamp(1.9rem, 5vw, 3.2rem);
 }
 
 .detail-author {

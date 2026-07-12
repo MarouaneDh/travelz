@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import Nav from '../components/Nav.jsx';
 import { UploadIcon, CameraIcon, PinIcon } from '../components/Icons.jsx';
@@ -19,6 +19,7 @@ function Uploader({ user }) {
   const [unplaced, setUnplaced] = useState([]);
   const [placing, setPlacing] = useState(null);
   const [justPlaced, setJustPlaced] = useState(null);
+  const queueRef = useRef(null);
 
   const myMap = user.role === 'curator' ? '/' : `/u/${user.username}`;
 
@@ -35,7 +36,11 @@ function Uploader({ user }) {
     try {
       const result = await api.upload(files, setProgress);
       setStatus({ result });
-      loadUnplaced();
+      await loadUnplaced();
+      // If any photos need a location, take the user straight to the queue.
+      if (result.needsPlacement > 0) {
+        setTimeout(() => queueRef.current?.scrollIntoView({ behavior: 'smooth' }), 150);
+      }
     } catch (err) {
       setStatus({ error: err.message });
     }
@@ -102,15 +107,23 @@ function Uploader({ user }) {
             <CameraIcon width={22} height={22} />
             <div>
               <strong>{status.result.uploaded} photos processed</strong>
-              <p className="muted">
-                {status.result.placed} placed on the map
-                {status.result.needsPlacement > 0 &&
-                  ` · ${status.result.needsPlacement} need a location (no GPS)`}
-                .
-              </p>
-              <Link to={myMap} className="btn btn-primary btn-sm" style={{ marginTop: '0.5rem' }}>
-                View my map
-              </Link>
+              {status.result.placed > 0 && (
+                <p className="muted">
+                  {status.result.placed} placed on your map instantly.
+                </p>
+              )}
+              {status.result.needsPlacement > 0 && (
+                <p className="muted">
+                  <strong>{status.result.needsPlacement}</strong> had no GPS and{' '}
+                  <strong>won't appear on your map until you place them</strong> — drop each
+                  onto the map below&nbsp;↓
+                </p>
+              )}
+              {status.result.placed > 0 && (
+                <Link to={myMap} className="btn btn-primary btn-sm" style={{ marginTop: '0.5rem' }}>
+                  View my map
+                </Link>
+              )}
             </div>
           </div>
         )}
@@ -124,14 +137,15 @@ function Uploader({ user }) {
         )}
 
         {unplaced.length > 0 && (
-          <section className="unplaced">
+          <section className="unplaced" ref={queueRef}>
             <div className="unplaced-head">
               <h2 className="unplaced-title">
                 Needs a location
                 <span className="unplaced-badge">{unplaced.length}</span>
               </h2>
               <p className="muted">
-                These photos had no GPS. Drop each one onto the map to add it.
+                These photos had no GPS, so they're <strong>not on your map yet</strong>.
+                Click each one to drop it onto the map.
               </p>
             </div>
             <div className="unplaced-grid">

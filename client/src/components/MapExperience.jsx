@@ -9,10 +9,13 @@ const defaultView = () =>
   typeof window !== 'undefined' && window.innerWidth >= 900 ? 'map' : 'feed';
 
 /**
- * The shared map/feed experience. `username` = null renders the curator's brand
- * home; a username renders that traveler's own map. `header` is the hero above it.
+ * The shared map/feed experience.
+ *  - `feed`            → the friend feed (moments from people you follow)
+ *  - `username` = null → the curator's brand home
+ *  - `username` set    → that traveler's own map
+ * `header` is the hero above it.
  */
-export default function MapExperience({ username = null, header }) {
+export default function MapExperience({ username = null, feed = false, header }) {
   const [view, setView] = useState(defaultView);
   const [moments, setMoments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,12 +24,16 @@ export default function MapExperience({ username = null, header }) {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    const load = username ? api.getUserMoments(username) : api.getMoments();
+    const load = feed
+      ? api.getFeed()
+      : username
+      ? api.getUserMoments(username)
+      : api.getMoments();
     load
       .then(setMoments)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, [username]);
+  }, [username, feed]);
 
   return (
     <>
@@ -56,9 +63,9 @@ export default function MapExperience({ username = null, header }) {
       <main className="home-main">
         {error && <p className="container error-banner">Couldn't load moments: {error}</p>}
         {view === 'map' ? (
-          <MapView username={username} />
+          <MapView username={username} feed={feed} />
         ) : (
-          <Feed moments={moments} loading={loading} />
+          <Feed moments={moments} loading={loading} feedMode={feed} />
         )}
       </main>
     </>
