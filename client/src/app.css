@@ -845,6 +845,108 @@
   font-size: 0.9rem;
 }
 
+/* Notification bell + badge */
+.notif-bell {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-full);
+  color: var(--text-muted);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.notif-bell:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.notif-badge {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  display: grid;
+  place-items: center;
+  background: var(--orange);
+  color: #fff;
+  font-size: 0.66rem;
+  font-weight: 700;
+  border-radius: var(--r-full);
+  border: 2px solid var(--surface);
+}
+
+/* Notifications page */
+.notif-page {
+  padding: 2rem 1.25rem 5rem;
+  max-width: 680px;
+}
+.notif-title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+.notif-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.notif-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.notif-row:hover {
+  border-color: color-mix(in srgb, var(--sky) 40%, var(--border));
+}
+.notif-row.unread {
+  background: color-mix(in srgb, var(--sky) 7%, var(--surface));
+  border-color: color-mix(in srgb, var(--sky) 25%, var(--border));
+}
+.notif-avatar {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sky), var(--orange));
+  color: #fff;
+  font-weight: 700;
+}
+.notif-icon {
+  flex-shrink: 0;
+  color: var(--sky);
+  display: inline-flex;
+}
+.notif-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.notif-text .flag-img {
+  height: 0.9em;
+}
+.notif-time {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.notif-skeleton {
+  height: 68px;
+  border-radius: var(--r-md);
+  background: linear-gradient(100deg, var(--surface-2) 30%, var(--surface) 50%, var(--surface-2) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
 .auth-alt {
   margin-top: 1rem;
   text-align: center;
@@ -951,6 +1053,75 @@
 
 .feed-title {
   font-size: clamp(1.9rem, 5vw, 3.2rem);
+}
+
+/* Onboarding ------------------------------------------------- */
+.onboard {
+  padding: 2.5rem 0 4rem;
+}
+.onboard-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin: 0.5rem 0 0.75rem;
+}
+.onboard-sub {
+  max-width: 52ch;
+  font-size: 1.05rem;
+}
+.onboard-map-wrap {
+  position: relative;
+  height: 52vh;
+  min-height: 360px;
+  margin: 1.75rem 1.25rem;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+.onboard-map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+.onboard-pinning {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.4rem 0.9rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-md);
+  z-index: var(--z-map);
+}
+.onboard-pins {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.onboard-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  background: color-mix(in srgb, var(--sky) 8%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--sky) 30%, var(--border));
+  border-radius: var(--r-full);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.onboard-chip svg {
+  color: var(--sky);
+}
+.onboard-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 /* Explore + Place ------------------------------------------- */

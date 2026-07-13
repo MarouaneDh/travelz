@@ -3,6 +3,7 @@ import { User } from '../models/User.js';
 import { Follow } from '../models/Follow.js';
 import { requireAuth, optionalAuth } from '../middleware/auth.js';
 import { feedFor, geojsonFor, passportFor } from '../services/momentQueries.js';
+import { notifyFollow } from '../services/notifications.js';
 
 const router = Router();
 
@@ -41,11 +42,15 @@ router.post('/:username/follow', requireAuth, async (req, res) => {
   if (String(target._id) === req.user.sub) {
     return res.status(400).json({ error: "You can't follow yourself" });
   }
-  // Idempotent thanks to the unique index; ignore duplicate-key errors.
-  try {
-    await Follow.create({ follower: req.user.sub, following: target._id });
-  } catch (err) {
-    if (err.code !== 11000) throw err;
+  // Only notify on a genuinely new follow (not a repeat tap).
+  const already = await Follow.findOne({ follower: req.user.sub, following: target._id });
+  if (!already) {
+    try {
+      await Follow.create({ follower: req.user.sub, following: target._id });
+      await notifyFollow(target._id, req.user.sub);
+    } catch (err) {
+      if (err.code !== 11000) throw err; // ignore race-condition duplicates
+    }
   }
   const followerCount = await Follow.countDocuments({ following: target._id });
   res.json({ isFollowing: true, followerCount });

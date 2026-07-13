@@ -8,6 +8,8 @@ import Studio from './pages/Studio.jsx';
 import FeedPage from './pages/FeedPage.jsx';
 import Explore from './pages/Explore.jsx';
 import Place from './pages/Place.jsx';
+import Notifications from './pages/Notifications.jsx';
+import Onboarding from './pages/Onboarding.jsx';
 import './app.css';
 
 export default function App() {
@@ -19,6 +21,8 @@ export default function App() {
       <Route path="/explore" element={<Explore />} />
       <Route path="/place/:name" element={<Place />} />
       <Route path="/feed" element={<FeedPage />} />
+      <Route path="/notifications" element={<Notifications />} />
+      <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/studio" element={<Studio />} />

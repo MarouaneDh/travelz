@@ -25,7 +25,7 @@ export default function Register() {
     try {
       const { token, user } = await api.register(form);
       signIn(token, user);
-      navigate(`/u/${user.username}`);
+      navigate('/onboarding'); // cold-start: pin a few places first
     } catch (err) {
       setError(err.message);
       setBusy(false);

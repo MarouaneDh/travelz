@@ -2,6 +2,7 @@ import { Photo } from '../models/Photo.js';
 import { Moment } from '../models/Moment.js';
 import { reverseGeocode } from './geocode.js';
 import { findMatchingMoment } from './grouping.js';
+import { notifyNewMoment } from './notifications.js';
 
 /**
  * Attach a photo to the right moment for a given location — creating a new
@@ -15,6 +16,7 @@ export async function attachPhotoToMoment(photo, { lat, lng, takenAt }) {
   const owner = photo.owner;
 
   let moment = await findMatchingMoment({ owner, lat, lng, takenAt: when });
+  const isNewMoment = !moment;
 
   if (!moment) {
     const geo = await reverseGeocode(lat, lng);
@@ -41,6 +43,9 @@ export async function attachPhotoToMoment(photo, { lat, lng, takenAt }) {
   if (when > (moment.endAt || moment.startAt)) moment.endAt = when;
   if (!moment.coverPhoto) moment.coverPhoto = photo._id;
   await moment.save();
+
+  // Tell the owner's followers about a brand-new place (Exploration tier).
+  if (isNewMoment) await notifyNewMoment(moment);
 
   return moment;
 }

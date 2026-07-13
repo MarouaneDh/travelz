@@ -24,6 +24,13 @@ export const api = {
   getMoment: (id) => fetch(`${BASE}/api/moments/${id}`).then(handle),
   getPassport: () => fetch(`${BASE}/api/moments/passport`).then(handle),
 
+  pinPlace: (lat, lng) =>
+    fetch(`${BASE}/api/moments/pin`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ lat, lng }),
+    }).then(handle),
+
   // Traveler profiles (per-user maps)
   getUser: (username) => fetch(`${BASE}/api/users/${username}`).then(handle),
   getUserMoments: (username) =>
@@ -54,6 +61,16 @@ export const api = {
   getExplorePlaces: () => fetch(`${BASE}/api/explore/places`).then(handle),
   getExplorePlace: (name) =>
     fetch(`${BASE}/api/explore/place?name=${encodeURIComponent(name)}`).then(handle),
+
+  getNotifications: () =>
+    fetch(`${BASE}/api/notifications`, { headers: authHeaders() }).then(handle),
+  getUnreadCount: () =>
+    fetch(`${BASE}/api/notifications/unread-count`, { headers: authHeaders() }).then(handle),
+  markNotificationsRead: () =>
+    fetch(`${BASE}/api/notifications/read`, {
+      method: 'POST',
+      headers: authHeaders(),
+    }).then(handle),
 
   me: () => fetch(`${BASE}/api/auth/me`, { headers: authHeaders() }).then(handle),
 
